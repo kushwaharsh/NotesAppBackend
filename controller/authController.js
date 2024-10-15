@@ -48,7 +48,7 @@ exports.registerUser = async (req, res) => {
         jwt.sign(
             payload,
             process.env.JWT_SECRET,
-            { expiresIn: '21h' }, // Token expires in 1 hour
+            { expiresIn: '21h' }, 
             (err, token) => {
                 if (err) throw err;
                 res.status(201).json({ // Use 201 status code for successful creation

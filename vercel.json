@@ -1,6 +1,6 @@
 {
     "version": 2,
-    "name": "notesAppWithHilt",
+    "name": "stembridge-erp",
     "builds": [
       {
         "src": "index.js",
