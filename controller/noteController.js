@@ -75,46 +75,65 @@ exports.getNoteById = async (req, res) => {
 
 // Update a note by ID
 exports.updateNote = async (req, res) => {
-    const { title, content } = req.body;
-  const {id} = req.query
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ 
+    const { title, content, tag, isBookmarked } = req.body;
+    const { id } = req.query;
+
+    // Check if id is provided
+    if (!id) {
+        return res.status(400).json({
             success: false,
             statusCode: 400,
-            errors: errors.array() 
+            msg: 'Note ID is required'
+        });
+    }
+
+    // Validate input errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            success: false,
+            statusCode: 400,
+            errors: errors.array()
         });
     }
 
     try {
+        // Find the note by id
         let note = await Notes.findById(id);
         if (!note) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 success: false,
                 statusCode: 404,
-                msg: 'Note not found' 
+                msg: 'Note not found'
             });
         }
 
-        if (title) note.title = title;
-        if (content) note.content = content;
+        // Update note fields if they exist in the request body
+        if (title !== undefined) note.title = title;
+        if (content !== undefined) note.content = content;
+        if (tag !== undefined) note.tag = tag;
+        if (isBookmarked !== undefined) note.isBookmarked = isBookmarked;
 
+        // Save the updated note
         await note.save();
-        res.status(200).json({ 
+
+        // Return success response
+        return res.status(200).json({
             success: true,
             statusCode: 200,
             msg: 'Note updated successfully',
-            note 
+            note
         });
     } catch (err) {
         console.error(err.message);
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             statusCode: 500,
             msg: 'Server error'
         });
     }
 };
+
 
 // Delete a note by ID
 exports.deleteNote = async (req, res) => {
