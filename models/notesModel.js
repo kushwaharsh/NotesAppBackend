@@ -14,6 +14,14 @@ const noteSchema = new Schema({
     type: String,
     required: true,
   },
+  tag : {
+    type: String,
+    default : "All"
+  },
+  isBookmarked : {
+    type: Boolean,
+    default : false
+  },
   dateCreated: {
     type: Date,
     default: Date.now,
