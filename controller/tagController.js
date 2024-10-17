@@ -105,6 +105,9 @@ exports.deleteTag = async (req, res) => {
 
 // Get all tags
 exports.getAllTags = async (req, res) => {
+
+    const {userId} = req.query
+
     try {
         const tags = await Tags.find({userId});
         
