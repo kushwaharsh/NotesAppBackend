@@ -4,10 +4,10 @@ const Tags = require('../models/tagModel');
 
 // Create a new tag
 exports.createTag = async (req, res) => {
-    const { tag } = req.body;
+    const { tag  , userId} = req.body;
     
     try {
-        const newTag = new Tags({ tag });
+        const newTag = new Tags({ tag , userId });
         await newTag.save();
         
         res.status(201).json({
@@ -39,12 +39,12 @@ exports.createTag = async (req, res) => {
 // Update an existing tag
 exports.updateTag = async (req, res) => {
     const id = req.query.id;
-    const { tag } = req.body;
+    const { tag , userId } = req.body;
     
     try {
         let updatedTag = await Tags.findByIdAndUpdate(
             id,
-            { tag },
+            { tag , userId },
             { new: true }
         );
         
@@ -106,7 +106,7 @@ exports.deleteTag = async (req, res) => {
 // Get all tags
 exports.getAllTags = async (req, res) => {
     try {
-        const tags = await Tags.find();
+        const tags = await Tags.find({userId});
         
         res.status(200).json({
             success: true,

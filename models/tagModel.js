@@ -6,6 +6,10 @@ const tagSchema = new mongoose.Schema({
         required: true, // 'required' is part of the options for the 'tag' field
         unique: true, // Ensures that each tag is unique
         trim: true
+    },
+    userId : {
+        type : mongoose.Types.ObjectId,
+        required : true
     }
 }, 
 {
