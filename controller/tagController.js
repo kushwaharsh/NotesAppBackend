@@ -110,13 +110,25 @@ exports.getAllTags = async (req, res) => {
 
     try {
         const tags = await Tags.find({userId});
+        if(tags.length){
+            res.status(200).json({
+                success: true,
+                statusCode: 200,
+                msg: 'Tags retrieved successfully',
+                labels: tags
+            });
+
+        }
+        else{
+            res.status(400).json({
+                success: false,
+                statusCode: 400,
+                msg: 'No tags found',
+                
+            });
+        }
         
-        res.status(200).json({
-            success: true,
-            statusCode: 200,
-            msg: 'Tags retrieved successfully',
-            labels: tags
-        });
+       
     } catch (err) {
         console.error(err.message);
         res.status(500).json({
