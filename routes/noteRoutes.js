@@ -26,7 +26,5 @@ router.put('/updateNote', verifyToken, validateUpdateNote, updateNote); // updat
 // Endpoint to delete a note by ID
 router.delete('/delete', verifyToken, deleteNote); // deleteNote
 
-//Endpoint to create a tag
-router.get('/createTag' , verifyToken , createTag);
 
 module.exports = router;

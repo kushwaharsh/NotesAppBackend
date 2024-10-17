@@ -1,7 +1,6 @@
 const { default: mongoose } = require('mongoose');
 const Notes = require('../models/notesModel');
 const { validationResult } = require('express-validator');
-const Tags = require('../models/tagModel');
 
 // Create a new note
 exports.createNote = async (req, res) => {
@@ -181,27 +180,6 @@ exports.deleteNote = async (req, res) => {
     } catch (err) {
         console.error(err.message);
         return res.status(500).json({
-            success: false,
-            statusCode: 500,
-            msg: 'Server error'
-        });
-    }
-};
-
-exports.createTag = async(req , res)=>{
-    const{tag} = req.body;
-    try {
-        const newTag = new Tags({tag});
-        await newTag.save();
-        res.status(201).json({ 
-            success: true,
-            statusCode: 200,
-            msg: 'Tag created successfully',
-            lable: newTag
-        });
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({
             success: false,
             statusCode: 500,
             msg: 'Server error'

@@ -4,7 +4,8 @@ const tagSchema = new mongoose.Schema({
     tag: {
         type: String, // Define the type explicitly for 'tag'
         required: true, // 'required' is part of the options for the 'tag' field
-        unique: true // Ensures that each tag is unique
+        unique: true, // Ensures that each tag is unique
+        trim: true
     }
 }, 
 {

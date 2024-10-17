@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const cors = require("cors")
 
 const notesRouter = require("./routes/noteRoutes")
+const tagRoutes = require('./routes/tagRoutes');
 // Load environment variables
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(express.json());
 // Define Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/notes', notesRouter);
+app.use('/api/tags', tagRoutes )
 
 // Define Port and Start Server
 const PORT = process.env.PORT || 5000;
