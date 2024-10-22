@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 // Middleware to validate note creation
 exports.validateCreateNote = [
     check('title', 'Title is required').not().isEmpty(),
-    check('content', 'Content is required').not().isEmpty(),
+   // check('content', 'Content is required').not().isEmpty(),
     // check('userId', 'User ID is required').not().isEmpty(),
     (req, res, next) => {
         const errors = validationResult(req);
@@ -18,7 +18,7 @@ exports.validateCreateNote = [
 // Middleware to validate note update
 exports.validateUpdateNote = [
     check('title', 'Title is required').optional().not().isEmpty(),
-    check('content', 'Content is required').optional().not().isEmpty(),
+    //check('content', 'Content is required').optional().not().isEmpty(),
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
