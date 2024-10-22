@@ -8,7 +8,7 @@ exports.createNote = async (req, res) => {
     const { title, content , tag , isBookmarked , whiteboard } = req.body;
 
     try {
-        const newNote = new Notes({ title, content , tag , isBookmarked , whiteboard});
+        const newNote = new Notes({ title, content , tag , isBookmarked});
         await newNote.save();
         res.status(201).json({ 
             success: true,
