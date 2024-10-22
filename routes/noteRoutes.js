@@ -21,7 +21,7 @@ router.get('/getAllnote', verifyToken, getAllNotes); // getAllNotes
 router.get('/noteById', verifyToken, getNoteById); // getNoteById
 
 // Endpoint to update a note by ID
-router.put('/updateNote', verifyToken, validateUpdateNote, updateNote); // updateNote
+router.post('/updateNote', verifyToken, validateUpdateNote, updateNote); // updateNote
 
 // Endpoint to delete a note by ID
 router.delete('/delete', verifyToken, deleteNote); // deleteNote
