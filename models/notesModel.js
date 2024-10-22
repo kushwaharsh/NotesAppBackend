@@ -35,7 +35,7 @@ const noteSchema = new Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', // Assuming you have a User model
-   
+     
   },
 },{timestamps:true});
 
