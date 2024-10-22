@@ -12,7 +12,9 @@ const noteSchema = new Schema({
   },
   content: {
     type: String,
-    required: true,
+  },
+  whiteboard: {
+    type: String,
   },
   tag : {
     type: String,
