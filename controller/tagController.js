@@ -112,10 +112,10 @@ exports.getAllTags = async (req, res) => {
         let tags = await Tags.find({ userId });
 
         // Ensure "all" tag is always present
-        const allTag = tags.find(tag => tag.tag === "all");
+        const allTag = tags.find(tag => tag.tag === "All");
         if (!allTag) {
             // Add "all" tag to the list if it's missing
-            const defaultAllTag = new Tags({ tag: "all", userId });
+            const defaultAllTag = new Tags({ tag: "All", userId });
             await defaultAllTag.save();
             tags = [defaultAllTag, ...tags]; // Add "all" tag at the beginning of the list
         }
