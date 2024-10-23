@@ -104,31 +104,36 @@ exports.deleteTag = async (req, res) => {
 };
 
 // Get all tags
+// Get all tags
 exports.getAllTags = async (req, res) => {
-
-    const {userId} = req.query
+    const { userId } = req.query;
 
     try {
-        const tags = await Tags.find({userId});
-        if(tags.length){
+        let tags = await Tags.find({ userId });
+
+        // Ensure "all" tag is always present
+        const allTag = tags.find(tag => tag.tag === "all");
+        if (!allTag) {
+            // Add "all" tag to the list if it's missing
+            const defaultAllTag = new Tags({ tag: "all", userId });
+            await defaultAllTag.save();
+            tags = [defaultAllTag, ...tags]; // Add "all" tag at the beginning of the list
+        }
+
+        if (tags.length) {
             res.status(200).json({
                 success: true,
                 statusCode: 200,
                 msg: 'Tags retrieved successfully',
                 labels: tags
             });
-
-        }
-        else{
+        } else {
             res.status(400).json({
                 success: false,
                 statusCode: 400,
                 msg: 'No tags found',
-                
             });
         }
-        
-       
     } catch (err) {
         console.error(err.message);
         res.status(500).json({
@@ -138,3 +143,4 @@ exports.getAllTags = async (req, res) => {
         });
     }
 };
+
