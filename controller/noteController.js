@@ -5,7 +5,7 @@ const { validationResult } = require("express-validator");
 // Create a new note
 exports.createNote = async (req, res) => {
   console.log("API hit");
-  const { title, content, tag, isBookmarked, whiteboard } = req.body;
+  const { title, content, tag, isBookmarked, whiteboard , noteDeadline } = req.body;
 
   try {
     const newNote = new Notes({
@@ -14,6 +14,7 @@ exports.createNote = async (req, res) => {
       tag,
       isBookmarked,
       whiteboard,
+      noteDeadline,
     });
     await newNote.save();
     res.status(201).json({

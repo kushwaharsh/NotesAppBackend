@@ -26,6 +26,10 @@ const noteSchema = new Schema({
   },
   dateCreated: {
     type: Date,
+    default: "none"
+  },
+  noteDeadline: {
+    type: Date,
     default: Date.now,
   },
   lastModified: {
