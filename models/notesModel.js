@@ -29,6 +29,7 @@ const noteSchema = new Schema({
   },
   noteDeadline: {
     type: String,
+    trim : true
   },
   lastModified: {
     type: Date,
