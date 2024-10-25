@@ -20,6 +20,10 @@ const noteSchema = new Schema({
     type: String,
     default : "All"
   },
+  tag : {
+    type: String,
+    required:true,
+  },
   isBookmarked : {
     type: Boolean,
     default : false
