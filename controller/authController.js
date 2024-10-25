@@ -100,8 +100,9 @@ exports.loginUser = async (req, res) => {
             });
         }
 
-        // Compare entered password with stored plain-text password
-        if (password !== user.password) {
+        // Compare entered password with hashed password in the database
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
             return res.status(400).json({ 
                 success: false,
                 statusCode: 400,
@@ -142,60 +143,57 @@ exports.loginUser = async (req, res) => {
     }
 };
 
-// Update an existing user
+// Update user information
 exports.updateUser = async (req, res) => {
     const { name, email, password } = req.body;
 
     // Validate request body
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ 
+        return res.status(400).json({
             success: false,
             statusCode: 400,
-            errors: errors.array() 
+            errors: errors.array(),
         });
     }
 
     try {
-        // Find user by their ID (assuming it's passed as a URL parameter)
+        // Find the user by ID (from route params)
         let user = await User.findById(req.params.id);
-
-        // If user doesn't exist, return an error
         if (!user) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 success: false,
                 statusCode: 404,
-                msg: 'User not found' 
+                msg: 'User not found',
             });
         }
 
-        // Update user details if provided
+        // Update user fields if provided in the request body
         if (name) user.name = name;
         if (email) user.email = email;
 
-        // Update password without hashing it (storing as plain text)
+        // If password is being updated, hash the new password
         if (password) {
-            user.password = password; // It's recommended to hash passwords
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
         }
 
-        // Save the updated user in the database
+        // Save updated user to the database
         await user.save();
 
-        res.status(200).json({ 
+        res.status(200).json({
             success: true,
             statusCode: 200,
             msg: 'User updated successfully',
-            user // Send back the updated user object
+            data: user, // Send back updated user data
         });
-
     } catch (err) {
         console.error(err.message);
         res.status(500).json({
             success: false,
             statusCode: 500,
-            msg: 'Server error'
+            msg: 'Server error',
         });
     }
 };
-
 
