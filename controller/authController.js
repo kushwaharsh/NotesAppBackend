@@ -1,5 +1,6 @@
 const User = require('../models/userModel'); // Import User model
 const jwt = require('jsonwebtoken'); // For JWT token generation
+const bcrypt = require('bcryptjs'); 
 const { validationResult } = require('express-validator'); // For input validation (optional)
 
 // Register a new user
@@ -27,11 +28,15 @@ exports.registerUser = async (req, res) => {
             });
         }
 
-        // Create new user (password stored as plain text)
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Create new user with hashed password
         user = new User({
             name,
             email,
-            password, // Plain text password (not hashed)
+            password: hashedPassword
         });
 
         // Save user to the database
@@ -56,7 +61,7 @@ exports.registerUser = async (req, res) => {
                     statusCode: 201,
                     msg: 'User registered successfully',
                     token, // Send back token as response
-                    data: user
+                    data: user // Send back user data
                 });
             }
         );
