@@ -3,6 +3,10 @@ const Notes = require("../models/notesModel");
 const { validationResult } = require("express-validator");
 
 
+
+
+
+
 // Create a new note
 exports.createNote = async (req, res) => {
   console.log("API hit");
