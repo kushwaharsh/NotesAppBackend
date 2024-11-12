@@ -121,7 +121,7 @@ exports.loginUser = async (req, res) => {
         jwt.sign(
             payload,
             process.env.JWT_SECRET,
-            { expiresIn: '9h' }, // Token expires in 9 hours
+            { expiresIn: 5184000 }, // Token expires in approximately 2 months
             (err, token) => {
                 if (err) throw err;
                 res.status(200).json({ 

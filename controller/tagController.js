@@ -109,16 +109,17 @@ exports.getAllTags = async (req, res) => {
     const { userId } = req.query;
 
     try {
+        // Fetch all tags for the user
         let tags = await Tags.find({ userId });
 
-        // // Ensure "all" tag is always present
-        // const allTag = tags.find(tag => tag.tag === "All");
-        // if (!allTag) {
-        //     // Add "all" tag to the list if it's missing
-        //     const defaultAllTag = new Tags({ tag: "All", userId });
-        //     await defaultAllTag.save();
-        //     tags = [defaultAllTag, ...tags]; // Add "all" tag at the beginning of the list
-        // }
+        // Check if "All" tag exists
+        let allTag = tags.find(tag => tag.tag === "All");
+        if (!allTag) {
+            // Create "All" tag if missing
+            allTag = new Tags({ tag: "All", userId });
+            await allTag.save();
+            tags = [allTag, ...tags]; // Add "All" tag at the beginning of the list
+        }
 
         if (tags.length) {
             res.status(200).json({
@@ -143,4 +144,5 @@ exports.getAllTags = async (req, res) => {
         });
     }
 };
+
 
