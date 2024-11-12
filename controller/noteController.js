@@ -110,8 +110,8 @@ exports.getNoteById = async (req, res) => {
 
 // Update a note by ID for a specific user
 exports.updateNote = async (req, res) => {
-  const { title, content, tag, isBookmarked, whiteboard, userId } = req.body;
-  const { id } = req.query;
+  const { title, content, tag, isBookmarked, whiteboard} = req.body;
+  const {  userId , id } = req.query;
 
   if (!id || !userId) {
     return res.status(400).json({

@@ -5,7 +5,7 @@ const {
     getNoteById,
     updateNote,
     deleteNote,
-    createTag
+
 } = require('../controller/noteController');
 const { validateCreateNote, validateUpdateNote, verifyToken } = require('../middleware/noteMiddleware');
 

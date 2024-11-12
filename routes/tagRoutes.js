@@ -6,7 +6,7 @@ const tagController = require('../controller/tagController');
 router.post('/createTag', tagController.createTag);
 
 // Route to update an existing tag by ID
-router.put('/updateTag/:id', tagController.updateTag);
+router.post('/updateTag', tagController.updateTag);
 
 // Route to delete a tag by ID
 router.delete('/deleteTag/:id', tagController.deleteTag);
