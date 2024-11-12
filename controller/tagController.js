@@ -121,6 +121,15 @@ exports.getAllTags = async (req, res) => {
             tags = [allTag, ...tags]; // Add "All" tag at the beginning of the list
         }
 
+         // Check if "All" tag exists
+         let finishedTag = tags.find(tag => tag.tag === "Finished");
+         if (!finishedTag) {
+             // Create "All" tag if missing
+             finishedTag = new Tags({ tag: "Finished", userId });
+             await finishedTag.save();
+             tags = [...tags , finishedTag]; // Add "All" tag at the beginning of the list
+         }
+
         if (tags.length) {
             res.status(200).json({
                 success: true,
