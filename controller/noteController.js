@@ -56,11 +56,12 @@ exports.getAllNotes = async (req, res) => {
 
   try {
     const notes = await Notes.find({ userId }).sort({ dateCreated: -1 });
+    const reversedNotesList = notes.reverse();
     res.status(200).json({
       success: true,
       statusCode: 200,
-      notes,
-      count: notes.length,
+      notes : reversedNotesList,
+      count: reversedNotesList.length,
     });
   } catch (err) {
     console.error(err.message);
