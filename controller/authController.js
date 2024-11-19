@@ -2,6 +2,8 @@ const User = require('../models/userModel'); // Import User model
 const jwt = require('jsonwebtoken'); // For JWT token generation
 const bcrypt = require('bcryptjs'); 
 const { validationResult } = require('express-validator'); // For input validation (optional)
+const Note = require('../models/notesModel'); // Import Note model
+const Tag = require('../models/tagModel');
 
 // Register a new user
 exports.registerUser = async (req, res) => {
@@ -145,7 +147,7 @@ exports.loginUser = async (req, res) => {
 
 // Update user information
 exports.updateUser = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, phoneNumber } = req.body;
 
     // Validate request body
     const errors = validationResult(req);
@@ -186,6 +188,52 @@ exports.updateUser = async (req, res) => {
             statusCode: 200,
             msg: 'User updated successfully',
             data: user, // Send back updated user data
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({
+            success: false,
+            statusCode: 500,
+            msg: 'Server error',
+        });
+    }
+};
+
+exports.deleteUser = async (req, res) => {
+    try {
+        // Get the userId from query params
+        let userId = req.query.userId;
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                statusCode: 400,
+                msg: 'User ID is required',
+            });
+        }
+
+        // Check if user exists
+        let user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                statusCode: 404,
+                msg: 'User not found',
+            });
+        }
+
+        // Remove all notes related to the user
+        await Note.deleteMany({ userId: user.id });
+
+        // Remove all tags related to the user
+        await Tag.deleteMany({ userId: user.id });
+
+        // Delete the user using findByIdAndDelete
+        await User.findByIdAndDelete(userId);
+
+        res.status(200).json({
+            success: true,
+            statusCode: 200,
+            msg: 'User and all related data deleted successfully',
         });
     } catch (err) {
         console.error(err.message);

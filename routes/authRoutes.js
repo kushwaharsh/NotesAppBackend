@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser, updateUser } = require('../controller/authController');
+const { registerUser, loginUser, updateUser , deleteUser } = require('../controller/authController');
 const { check } = require('express-validator'); // For validation
 const auth = require('../middleware/authMiddleware'); // Middleware for protected routes
 const router = express.Router();
@@ -36,5 +36,8 @@ router.put(
     ],
     updateUser
 );
+
+// Route for deleting a user by ID (protected)
+router.delete('/user/deleteAccount', auth, deleteUser);
 
 module.exports = router;

@@ -27,6 +27,31 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,  // Automatically set the date when the user is created
     },
+    phoneNumber: {
+        type: String,
+        required: false,  // Optional: you can make it required if needed
+        match: [/^\d{10}$/, 'Please enter a valid 10-digit phone number'],  // Validates 10-digit phone number
+        trim: true,
+    },
+    subscriptionPlanStatus: {
+        type: String,
+        enum: ['active', 'inactive', 'expired'],  // Possible statuses: 'active', 'inactive', or 'expired'
+        default: 'inactive',  // Default value
+    },
+    collaboratedMembers: [{
+        type: mongoose.Schema.Types.ObjectId,  // Reference to other User documents
+        ref: 'User',  // Reference to the User model
+    }],
+});
+
+// Virtual field to return a message when there are no collaborations
+UserSchema.virtual('collaborationStatus').get(function() {
+    return this.collaboratedMembers.length === 0 ? 'No collaboration yet' : 'Collaborations available';
+});
+
+// To include the virtual field in the JSON output
+UserSchema.set('toJSON', {
+    virtuals: true,
 });
 
 const User = mongoose.model('User', UserSchema);
