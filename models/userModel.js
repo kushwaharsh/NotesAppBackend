@@ -18,20 +18,39 @@ const UserSchema = new mongoose.Schema({
             'Please enter a valid email address' // Error message for invalid email
         ]
     },
-    password: {
-        type: String,
-        required: true,  // Password is required
-        minlength: 6     // Optional: set a minimum length
-    },
-    date: {
-        type: Date,
-        default: Date.now,  // Automatically set the date when the user is created
-    },
+
     phoneNumber: {
         type: String,
         required: false,  // Optional: you can make it required if needed
         match: [/^\d{10}$/, 'Please enter a valid 10-digit phone number'],  // Validates 10-digit phone number
         trim: true,
+    },
+
+    isExists: {
+        type: String, 
+        required: true,
+        default : false // Not required initially, will be set during OTP generation
+    },
+
+    otp: {
+        type: String, 
+        required: false, // Not required initially, will be set during OTP generation
+    },
+    otpExpiration: {
+        type: Date,
+        required: false, // Time when the OTP expires
+    },
+    isVerified: {
+        type: Boolean,
+        default: false, // Set to true once the user is verified via OTP
+    },
+    isRegistered: {
+        type: Boolean,
+        default: false, // Set to true once the user completes registration
+    },
+    date: {
+        type: Date,
+        default: Date.now,  // Automatically set the date when the user is created
     },
     subscriptionPlanStatus: {
         type: String,

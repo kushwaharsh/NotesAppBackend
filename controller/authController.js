@@ -1,44 +1,164 @@
 const User = require('../models/userModel'); // Import User model
 const jwt = require('jsonwebtoken'); // For JWT token generation
 const bcrypt = require('bcryptjs'); 
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 const { validationResult } = require('express-validator'); // For input validation (optional)
 const Note = require('../models/notesModel'); // Import Note model
 const Tag = require('../models/tagModel');
+const dotenv = require('dotenv');
 
-// Register a new user
-exports.registerUser = async (req, res) => {
-    const { name, email, password } = req.body;
 
-    // Validate request body
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ 
+dotenv.config();
+
+
+// Create a transporter using your email service (e.g., Gmail)
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,  // Your email address
+        pass: process.env.EMAIL_PASS,  // Your email password or app-specific password
+    }
+});
+
+// In-memory store for OTPs (use a more persistent store in production)
+// Store for OTPs (in memory)
+const otpStore = {}; // Store OTPs temporarily in memory. Consider using a database for production.
+
+
+exports.sendOtp = async (req, res) => {
+    const { email } = req.body;
+    try {
+        // Check if the user exists in the database
+        const user = await User.findOne({ email });
+        const isExists = !!user;
+
+        // Generate a random OTP
+        const otp = crypto.randomInt(100000, 999999).toString();
+
+        // Store OTP in memory with an expiration (5 minutes)
+        otpStore[email] = {
+            otp,
+            expiry: Date.now() + 5 * 60 * 1000 // 5 minutes from now
+        };
+
+        // Send OTP via email
+        const mailOptions = {
+            from: process.env.EMAIL_USER, 
+            to: email, 
+            subject: 'Your OTP for Authentication',
+            text: `Your OTP is: ${otp}. It will expire in 5 minutes.`
+        };
+
+        transporter.sendMail(mailOptions, async (err, info) => {
+            if (err) {
+                console.error('Error sending OTP:', err);
+                return res.status(500).json({
+                    success: false,
+                    statusCode: 500,
+                    msg: 'Server error while sending OTP'
+                });
+            }
+
+            // Generate a JWT token
+            const payload = {
+                user: {
+                    email: email,
+                    id: user ? user.id : null // If user exists, use the user's ID, else null
+                },
+            };
+
+            // Sign the JWT token
+            const token = await new Promise((resolve, reject) => {
+                jwt.sign(
+                    payload,
+                    process.env.JWT_SECRET,
+                    { expiresIn: '21h' }, // Token expires in 21 hours
+                    (err, signedToken) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(signedToken);
+                        }
+                    }
+                );
+            });
+
+            // Send response
+            res.status(200).json({
+                success: true,
+                statusCode: 200,
+                msg: 'OTP sent successfully',
+                isExists, // Include whether the user already exists
+                token,    // JWT token, always present
+                data: isExists ? user : { email } // User data if exists, else email
+            });
+        });
+    } catch (err) {
+        console.error('Error in sendOtp:', err.message);
+        res.status(500).json({
             success: false,
-            statusCode: 400,
-            errors: errors.array() 
+            statusCode: 500,
+            msg: 'Server error while sending OTP'
         });
     }
+};
+
+
+// Function to verify OTP
+exports.verifyOtp = async (req, res) => {
+    const { email, otp } = req.body;
 
     try {
-        // Check if user already exists
-        let user = await User.findOne({ email });
-        if (user) {
-            return res.status(400).json({ 
+        // Retrieve the OTP from the memory store
+        const sentOtp = otpStore[email];
+
+        // If no OTP was sent or the OTP is incorrect
+        if (!sentOtp) {
+            return res.status(400).json({
                 success: false,
                 statusCode: 400,
-                msg: 'User already exists' 
+                msg: 'OTP not sent or expired'
             });
         }
 
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        // Verify OTP
+        if (sentOtp !== otp) {
+            return res.status(400).json({
+                success: false,
+                statusCode: 400,
+                msg: 'Invalid OTP'
+            });
+        }
 
-        // Create new user with hashed password
-        user = new User({
+        // OTP is valid, clear OTP from memory
+        delete otpStore[email];
+
+        res.status(200).json({
+            success: true,
+            statusCode: 200,
+            msg: 'OTP verified successfully'
+        });
+    } catch (err) {
+        console.error('Error in verifyOtp:', err.message);
+        res.status(500).json({
+            success: false,
+            statusCode: 500,
+            msg: 'Server error while verifying OTP'
+        });
+    }
+};
+
+
+// Register a new user
+exports.registerUser = async (req, res) => {
+    const { name, email } = req.body; // Only require name and email
+
+    try {
+        // Create new user without any checks
+        const user = new User({
             name,
-            email,
-            password: hashedPassword
+            email
         });
 
         // Save user to the database
@@ -76,6 +196,8 @@ exports.registerUser = async (req, res) => {
         });
     }
 };
+
+
 
 // Login an existing user
 exports.loginUser = async (req, res) => {
@@ -144,6 +266,9 @@ exports.loginUser = async (req, res) => {
         });
     }
 };
+
+
+
 
 // Update user information
 exports.updateUser = async (req, res) => {
