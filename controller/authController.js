@@ -21,9 +21,8 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// In-memory store for OTPs (use a more persistent store in production)
-// Store for OTPs (in memory)
-const otpStore = {}; // Store OTPs temporarily in memory. Consider using a database for production.
+
+const otpStore = {}; 
 
 
 exports.sendOtp = async (req, res) => {
@@ -50,7 +49,7 @@ exports.sendOtp = async (req, res) => {
             text: `Your OTP is: ${otp}. It will expire in 5 minutes.`
         };
 
-        transporter.sendMail(mailOptions, async (err, info) => {
+        transporter.sendMail(mailOptions, (err, info) => {
             if (err) {
                 console.error('Error sending OTP:', err);
                 return res.status(500).json({
@@ -60,38 +59,13 @@ exports.sendOtp = async (req, res) => {
                 });
             }
 
-            // Generate a JWT token
-            const payload = {
-                user: {
-                    email: email,
-                    id: user ? user.id : null // If user exists, use the user's ID, else null
-                },
-            };
-
-            // Sign the JWT token
-            const token = await new Promise((resolve, reject) => {
-                jwt.sign(
-                    payload,
-                    process.env.JWT_SECRET,
-                    { expiresIn: '21h' }, // Token expires in 21 hours
-                    (err, signedToken) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(signedToken);
-                        }
-                    }
-                );
-            });
-
-            // Send response
+            // Send a success response without any additional data
             res.status(200).json({
                 success: true,
                 statusCode: 200,
                 msg: 'OTP sent successfully',
-                isExists, // Include whether the user already exists
-                token,    // JWT token, always present
-                data: isExists ? user : { email } // User data if exists, else email
+                isExists,
+                email // Indicate whether the user exists
             });
         });
     } catch (err) {
@@ -111,10 +85,10 @@ exports.verifyOtp = async (req, res) => {
 
     try {
         // Retrieve the OTP from the memory store
-        const sentOtp = otpStore[email];
+        const sentOtpData = otpStore[email];
 
-        // If no OTP was sent or the OTP is incorrect
-        if (!sentOtp) {
+        // If no OTP was sent or the OTP is expired
+        if (!sentOtpData || sentOtpData.expiry < Date.now()) {
             return res.status(400).json({
                 success: false,
                 statusCode: 400,
@@ -123,7 +97,7 @@ exports.verifyOtp = async (req, res) => {
         }
 
         // Verify OTP
-        if (sentOtp !== otp) {
+        if (sentOtpData.otp !== otp) {
             return res.status(400).json({
                 success: false,
                 statusCode: 400,
@@ -134,10 +108,42 @@ exports.verifyOtp = async (req, res) => {
         // OTP is valid, clear OTP from memory
         delete otpStore[email];
 
+        // Check if the user exists
+        const user = await User.findOne({ email });
+        const isExists = !!user;
+
+        // Generate a JWT token if the user exists
+        const payload = {
+            user: {
+                email: email,
+                id: user ? user.id : null // Use user's ID if they exist, else null
+            },
+        };
+
+        // Sign the JWT token
+        const token = await new Promise((resolve, reject) => {
+            jwt.sign(
+                payload,
+                process.env.JWT_SECRET,
+                { expiresIn: '21h' }, // Token expires in 21 hours
+                (err, signedToken) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(signedToken);
+                    }
+                }
+            );
+        });
+
+        // Send response with all required data
         res.status(200).json({
             success: true,
             statusCode: 200,
-            msg: 'OTP verified successfully'
+            msg: 'OTP verified successfully',
+            isExists,
+            token,
+            data: isExists ? user : { email }
         });
     } catch (err) {
         console.error('Error in verifyOtp:', err.message);
@@ -148,6 +154,7 @@ exports.verifyOtp = async (req, res) => {
         });
     }
 };
+
 
 
 // Register a new user
