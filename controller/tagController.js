@@ -104,121 +104,6 @@ exports.deleteTag = async (req, res) => {
     }
 };
 
-// Get all tags
-// exports.getAllTags = async (req, res) => {
-//     const { userId } = req.query;
-
-//     try {
-//         // Fetch all tags for the user
-//         let tags = await Tags.find({ userId });
-
-//         // Check if "All" tag exists
-//         let allTag = tags.find(tag => tag.tag === "All");
-//         if (!allTag) {
-//             // Create "All" tag if missing
-//             allTag = new Tags({ tag: "All", userId });
-//             await allTag.save();
-//             tags = [allTag, ...tags]; // Add "All" tag at the beginning of the list
-//         }
-
-//          // Check if "All" tag exists
-//          let finishedTag = tags.find(tag => tag.tag === "Finished");
-//          if (!finishedTag) {
-//              // Create "All" tag if missing
-//              finishedTag = new Tags({ tag: "Finished", userId });
-//              await finishedTag.save();
-//              tags = [...tags , finishedTag]; // Add "All" tag at the beginning of the list
-//          }
-
-//         if (tags.length) {
-//             res.status(200).json({
-//                 success: true,
-//                 statusCode: 200,
-//                 msg: 'Tags retrieved successfully',
-//                 labels: tags
-//             });
-//         } else {
-//             res.status(400).json({
-//                 success: false,
-//                 statusCode: 400,
-//                 msg: 'No tags found',
-//             });
-//         }
-//     } catch (err) {
-//         console.error(err.message);
-//         res.status(500).json({
-//             success: false,
-//             statusCode: 500,
-//             msg: 'Server error'
-//         });
-//     }
-// };
-
-
-// exports.getAllTags = async (req, res) => {
-//     const { userId } = req.query;
-
-//     try {
-//         // Fetch all tags for the user
-//         let tags = await Tags.find({ userId });
-
-//         // Check if "All" tag exists
-//         let allTag = tags.find(tag => tag.tag === "All");
-//         if (!allTag) {
-//             // Create "All" tag if missing
-//             allTag = new Tags({ tag: "All", userId });
-//             await allTag.save();
-//             tags = [allTag, ...tags]; // Add "All" tag at the beginning of the list
-//         }
-
-//         // Check if "Finished" tag exists
-//         let finishedTag = tags.find(tag => tag.tag === "Finished");
-//         if (!finishedTag) {
-//             // Create "Finished" tag if missing
-//             finishedTag = new Tags({ tag: "Finished", userId });
-//             await finishedTag.save();
-//             tags = [...tags, finishedTag]; // Add "Finished" tag at the end of the list
-//         }
-
-//         // Iterate through each tag to check if it has an attached note
-//         const validTags = [];
-//         for (const tag of tags) {
-//             // Check if any notes exist with the current tag
-//             const attachedNotes = await Notes.find({ tag: tag.tag, userId });
-
-//             if (attachedNotes.length > 0) {
-//                 // Include tags that have attached notes
-//                 validTags.push(tag);
-//             } else {
-//                 // Delete the tag if no notes are attached
-//                 await Tags.findByIdAndDelete(tag._id);
-//             }
-//         }
-
-//         if (validTags.length) {
-//             res.status(200).json({
-//                 success: true,
-//                 statusCode: 200,
-//                 msg: 'Tags retrieved successfully',
-//                 labels: validTags
-//             });
-//         } else {
-//             res.status(400).json({
-//                 success: false,
-//                 statusCode: 400,
-//                 msg: 'No tags found',
-//             });
-//         }
-//     } catch (err) {
-//         console.error(err.message);
-//         res.status(500).json({
-//             success: false,
-//             statusCode: 500,
-//             msg: 'Server error'
-//         });
-//     }
-// };
-
 
 exports.getAllTags = async (req, res) => {
     const { userId } = req.query;
@@ -290,6 +175,8 @@ exports.getAllTags = async (req, res) => {
         });
     }
 };
+
+
 
 
 

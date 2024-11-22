@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const tagController = require('../controller/tagController');
 
+const {verifyToken } = require('../middleware/noteMiddleware');
+
+
 // Route to create a new tag
 router.post('/createTag', tagController.createTag);
 
@@ -12,6 +15,6 @@ router.post('/updateTag', tagController.updateTag);
 router.delete('/deleteTag/:id', tagController.deleteTag);
 
 // Route to get all tags
-router.get('/getAllTags', tagController.getAllTags);
+router.get('/getAllTags', verifyToken , tagController.getAllTags);
 
 module.exports = router;

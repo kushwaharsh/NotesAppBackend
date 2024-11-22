@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 // Create User Schema
 const UserSchema = new mongoose.Schema({
+    
     name: {
         type: String,
         required: true,  // Name is required
@@ -17,36 +18,6 @@ const UserSchema = new mongoose.Schema({
             /^\S+@\S+\.\S+$/, 
             'Please enter a valid email address' // Error message for invalid email
         ]
-    },
-
-    phoneNumber: {
-        type: String,
-        required: false,  // Optional: you can make it required if needed
-        match: [/^\d{10}$/, 'Please enter a valid 10-digit phone number'],  // Validates 10-digit phone number
-        trim: true,
-    },
-
-    isExists: {
-        type: String, 
-        required: true,
-        default : false // Not required initially, will be set during OTP generation
-    },
-
-    otp: {
-        type: String, 
-        required: false, // Not required initially, will be set during OTP generation
-    },
-    otpExpiration: {
-        type: Date,
-        required: false, // Time when the OTP expires
-    },
-    isVerified: {
-        type: Boolean,
-        default: false, // Set to true once the user is verified via OTP
-    },
-    isRegistered: {
-        type: Boolean,
-        default: false, // Set to true once the user completes registration
     },
     date: {
         type: Date,
