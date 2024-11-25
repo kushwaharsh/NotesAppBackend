@@ -125,7 +125,7 @@ exports.verifyOtp = async (req, res) => {
             jwt.sign(
                 payload,
                 process.env.JWT_SECRET,
-                { expiresIn: '21h' }, // Token expires in 21 hours
+                { expiresIn: '30d' }, // Token expires in 21 hours
                 (err, signedToken) => {
                     if (err) {
                         reject(err);
@@ -182,7 +182,7 @@ exports.registerUser = async (req, res) => {
         jwt.sign(
             payload,
             process.env.JWT_SECRET,
-            { expiresIn: '21h' }, 
+            { expiresIn: '30d' }, 
             (err, token) => {
                 if (err) throw err;
                 res.status(201).json({ // Use 201 status code for successful creation
