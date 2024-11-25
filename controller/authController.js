@@ -45,8 +45,8 @@ exports.sendOtp = async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL_USER, 
             to: email, 
-            subject: 'Your OTP for Authentication',
-            text: `Your OTP is: ${otp}. It will expire in 5 minutes.`
+            subject: 'Notely - Your OTP Code for Verification',
+            html: getHtmlTemplate(otp)
         };
 
         transporter.sendMail(mailOptions, (err, info) => {
@@ -376,4 +376,12 @@ exports.deleteUser = async (req, res) => {
         });
     }
 };
+
+function getHtmlTemplate(otp) {
+    const templatePath = path.join(__dirname, 'otpTemplate.html');
+    let htmlContent = fs.readFileSync(templatePath, 'utf8');
+    // Replace the placeholder {{OTP_CODE}} with the actual OTP
+    htmlContent = htmlContent.replace('{{OTP_CODE}}', otp);
+    return htmlContent;
+}
 
