@@ -45,9 +45,37 @@ exports.sendOtp = async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL_USER, 
             to: email, 
-            subject: 'Your OTP for Authentication',
-            text: `Your OTP is: ${otp}. It will expire in 5 minutes.`
+            subject: 'Your OTP for Authentication - Notely',
+            text: `Your OTP is: ${otp}. It will expire in 5 minutes.`,
+            html: `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>OTP Verification - Notely</title>
+                </head>
+                <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
+                    <div style="text-align: center; padding-bottom: 20px;">
+                        <h2 style="color: #4CAF50; margin-bottom: 5px;">Verify Your Email</h2>
+                        <p style="color: #777; font-size: 14px;">Thank you for signing up! Use the following OTP to complete your verification.</p>
+                    </div>
+                    
+                    <div style="text-align: center; background-color: #ffffff; padding: 30px 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                        <h3 style="color: #333; font-size: 20px; margin-bottom: 15px;">Your OTP Code</h3>
+                        <div style="font-size: 36px; font-weight: bold; color: #4CAF50; padding: 10px 0;">${otp}</div>
+                        <p style="color: #999; font-size: 12px;">This OTP is valid for 10 minutes only. Please do not share it with anyone.</p>
+                    </div>
+                    
+                    <div style="padding-top: 20px; text-align: center;">
+                        <p style="color: #555; font-size: 14px;">Need help? Contact our support team at <a href="mailto:reach.notely@gmail.com" style="color: #4CAF50; text-decoration: none;">support@example.com</a>.</p>
+                        <p style="color: #999; font-size: 12px;">&copy; 2024 Notely. All rights reserved.</p>
+                    </div>
+                </body>
+                </html>
+            `
         };
+        
 
         transporter.sendMail(mailOptions, (err, info) => {
             if (err) {
