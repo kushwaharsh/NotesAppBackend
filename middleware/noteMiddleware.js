@@ -66,7 +66,7 @@ exports.verifyToken = (req, res, next) => {
         req.user = decoded.user; // Attach user information to the request
         next();
     } catch (err) {
-        res.status(401).json({ msg: 'Token is not valid' });
+        res.status(401).json({ status: false, statusCode: 401, msg: 'Token is not valid' , comment : 'may be security logout' });
     }
 };
 
